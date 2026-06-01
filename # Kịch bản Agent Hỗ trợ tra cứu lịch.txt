@@ -1,0 +1,474 @@
+# Kịch bản Agent: Hỗ trợ tra cứu lịch học và nội dung khóa học
+
+## 1. Không gian hẹp
+
+Nhóm chọn không gian hẹp là **giáo dục**, cụ thể là **hỗ trợ tra cứu lịch học, thông tin buổi học và nội dung khóa học**.
+
+Agent đóng vai trò như một trợ lý học tập. Sinh viên có thể hỏi về lịch học theo ngày, theo buổi hoặc theo nội dung. Agent sẽ tự xác định câu hỏi cần tra cứu kiểu gì, gọi tool phù hợp, đọc kết quả trả về và đưa ra câu trả lời cuối cùng.
+
+---
+
+## 2. Dữ liệu đầu vào
+
+Dữ liệu lịch học gồm các ngày từ 01/06/2026 đến 05/06/2026:
+
+* Thứ Hai, 01/06/2026:
+
+  * Buổi sáng: Design Pattern ReAct, kiến trúc Agent, Agent Loop, Thought-Action-Observation.
+  * Buổi chiều: Vibe Coding 3, Agent Loop Prototyping và Lab 3: Chatbot vs Agent – thực hành so sánh và xây dựng luồng Agent.
+
+* Thứ Ba, 02/06/2026:
+
+  * Buổi sáng: Prompt Engineering & Tool Calling, bao gồm system prompt, function calling và LangGraph.
+  * Buổi chiều: Vibe Coding 4, Tool Development with AI và Lab 4: Build First AI Agent – ReAct + Tools.
+
+* Thứ Tư, 03/06/2026:
+
+  * Buổi sáng: AI Product Thinking & Requirements, PRD cho AI và Risk Assessment.
+  * Buổi chiều: Vibe Coding 5, PRD Generation & Risk Analysis và Lab 5: PRD Writing & Risk Assessment.
+
+* Thứ Năm, 04/06/2026:
+
+  * Buổi sáng: AI Product & Project Management, Agile cho AI, MVP và low-code tools.
+  * Buổi chiều: Vibe Coding 6, Business Document Generation và Lab 6: Final PRD and ROI Analysis.
+
+* Thứ Sáu, 05/06/2026:
+
+  * Buổi sáng: Data Foundations, gồm Embedding, Chunking, Vector Store, ChromaDB/FAISS.
+  * Buổi chiều: Vibe Coding 7, Data Processing Pipeline và Lab 7: Vector Store Integration.
+
+---
+
+## 3. Các tool agent sử dụng
+
+### Tool 1: `get_schedule_by_date`
+
+Mục đích: Tra cứu lịch học theo ngày.
+
+Tham số:
+
+```json
+{
+  "date": "YYYY-MM-DD"
+}
+```
+
+Ví dụ:
+
+```json
+{
+  "date": "2026-06-02"
+}
+```
+
+Observation trả về:
+
+```json
+{
+  "date": "2026-06-02",
+  "weekday": "Thứ Ba",
+  "morning": "Prompt Engineering & Tool Calling, bao gồm system prompt, function calling và LangGraph.",
+  "afternoon": "Vibe Coding 4, Tool Development with AI và Lab 4: Build First AI Agent – ReAct + Tools."
+}
+```
+
+---
+
+### Tool 2: `search_schedule_by_topic`
+
+Mục đích: Tìm buổi học có chứa một chủ đề hoặc từ khóa.
+
+Tham số:
+
+```json
+{
+  "keyword": "Vector Store"
+}
+```
+
+Observation trả về:
+
+```json
+{
+  "results": [
+    {
+      "date": "2026-06-05",
+      "weekday": "Thứ Sáu",
+      "session": "Buổi sáng",
+      "content": "Data Foundations, gồm Embedding, Chunking, Vector Store, ChromaDB/FAISS."
+    },
+    {
+      "date": "2026-06-05",
+      "weekday": "Thứ Sáu",
+      "session": "Buổi chiều",
+      "content": "Vibe Coding 7, Data Processing Pipeline và Lab 7: Vector Store Integration."
+    }
+  ]
+}
+```
+
+---
+
+### Tool 3: `get_session_detail`
+
+Mục đích: Lấy chi tiết một buổi học cụ thể theo ngày và buổi.
+
+Tham số:
+
+```json
+{
+  "date": "YYYY-MM-DD",
+  "session": "morning hoặc afternoon"
+}
+```
+
+Ví dụ:
+
+```json
+{
+  "date": "2026-06-01",
+  "session": "morning"
+}
+```
+
+Observation trả về:
+
+```json
+{
+  "date": "2026-06-01",
+  "weekday": "Thứ Hai",
+  "session": "Buổi sáng",
+  "content": "Design Pattern ReAct, kiến trúc Agent, Agent Loop, Thought-Action-Observation."
+}
+```
+
+---
+
+## 4. Trace Thought / Action / Observation
+
+### Tình hu 1
+
+Người dùng hỏi:4. Trace
+
+```text
+Thứ Ba học nội dung gì?
+```
+
+### Step 1
+
+Thought:
+
+```text
+Người dùng hỏi theo ngày trong tuần là Thứ Ba. Cần đổi Thứ Ba trong dữ liệu thành ngày 02/06/2026.
+```
+
+Action:
+
+```json
+{
+  "tool": "get_schedule_by_date",
+  "parameters": {
+    "date": "2026-06-02"
+  }
+}
+```
+
+Observation:
+
+```json
+{
+  "date": "2026-06-02",
+  "weekday": "Thứ Ba",
+  "morning": "Prompt Engineering & Tool Calling, bao gồm system prompt, function calling và LangGraph.",
+  "afternoon": "Vibe Coding 4, Tool Development with AI và Lab 4: Build First AI Agent – ReAct + Tools."
+}
+```
+
+### Step 2
+
+Thought:
+
+```text
+Tool đã trả về đầy đủ nội dung buổi sáng và buổi chiều của Thứ Ba. Có thể tổng hợp lại cho người dùng.
+```
+
+Action:
+
+```json
+{
+  "tool": "format_schedule_answer",
+  "parameters": {
+    "date": "2026-06-02",
+    "weekday": "Thứ Ba",
+    "morning": "Prompt Engineering & Tool Calling, bao gồm system prompt, function calling và LangGraph.",
+    "afternoon": "Vibe Coding 4, Tool Development with AI và Lab 4: Build First AI Agent – ReAct + Tools."
+  }
+}
+```
+
+Observation:
+
+```json
+{
+  "status": "success",
+  "answer": "Thứ Ba, ngày 02/06/2026, buổi sáng học Prompt Engineering & Tool Calling, bao gồm system prompt, function calling và LangGraph. Buổi chiều học Vibe Coding 4, Tool Development with AI và Lab 4: Build First AI Agent – ReAct + Tools."
+}
+```
+
+### Step 3
+
+Thought:
+
+```text
+Câu trả lời đã có đủ thông tin về ngày, buổi sáng và buổi chiều. Agent có thể dừng và trả lời cuối cùng.
+```
+
+Final Answer:
+
+```text
+Thứ Ba, ngày 02/06/2026:
+
+- Buổi sáng: Prompt Engineering & Tool Calling, bao gồm system prompt, function calling và LangGraph.
+- Buổi chiều: Vibe Coding 4, Tool Development with AI và Lab 4: Build First AI Agent – ReAct + Tools.
+```
+
+---
+
+## 5. Tình huống 2: Tra cứu theo chủ đề
+
+Người dùng hỏi:
+
+```text
+Nội dung Vector Store học vào ngày nào?
+```
+
+### Step 1
+
+Thought:
+
+```text
+Người dùng không hỏi theo ngày cụ thể mà hỏi theo chủ đề Vector Store. Cần dùng tool tìm kiếm lịch học theo từ khóa.
+```
+
+Action:
+
+```json
+{
+  "tool": "search_schedule_by_topic",
+  "parameters": {
+    "keyword": "Vector Store"
+  }
+}
+```
+
+Observation:
+
+```json
+{
+  "results": [
+    {
+      "date": "2026-06-05",
+      "weekday": "Thứ Sáu",
+      "session": "Buổi sáng",
+      "content": "Data Foundations, gồm Embedding, Chunking, Vector Store, ChromaDB/FAISS."
+    },
+    {
+      "date": "2026-06-05",
+      "weekday": "Thứ Sáu",
+      "session": "Buổi chiều",
+      "content": "Vibe Coding 7, Data Processing Pipeline và Lab 7: Vector Store Integration."
+    }
+  ]
+}
+```
+
+### Step 2
+
+Thought:
+
+```text
+Từ khóa Vector Store xuất hiện trong cả buổi sáng và buổi chiều ngày 05/06/2026. Cần trả lời đầy đủ cả hai buổi.
+```
+
+Action:
+
+```json
+{
+  "tool": "format_topic_answer",
+  "parameters": {
+    "keyword": "Vector Store",
+    "results": [
+      {
+        "date": "2026-06-05",
+        "weekday": "Thứ Sáu",
+        "session": "Buổi sáng",
+        "content": "Data Foundations, gồm Embedding, Chunking, Vector Store, ChromaDB/FAISS."
+      },
+      {
+        "date": "2026-06-05",
+        "weekday": "Thứ Sáu",
+        "session": "Buổi chiều",
+        "content": "Vibe Coding 7, Data Processing Pipeline và Lab 7: Vector Store Integration."
+      }
+    ]
+  }
+}
+```
+
+Observation:
+
+```json
+{
+  "status": "success",
+  "answer": "Nội dung Vector Store được học vào Thứ Sáu, ngày 05/06/2026. Buổi sáng học Data Foundations, gồm Embedding, Chunking, Vector Store, ChromaDB/FAISS. Buổi chiều thực hành Vibe Coding 7, Data Processing Pipeline và Lab 7: Vector Store Integration."
+}
+```
+
+### Step 3
+
+Thought:
+
+```text
+Đã tìm được ngày học và nội dung liên quan đến Vector Store. Agent có thể dừng.
+```
+
+Final Answer:
+
+```text
+Nội dung Vector Store được học vào Thứ Sáu, ngày 05/06/2026.
+
+- Buổi sáng: Data Foundations, gồm Embedding, Chunking, Vector Store, ChromaDB/FAISS.
+- Buổi chiều: Vibe Coding 7, Data Processing Pipeline và Lab 7: Vector Store Integration.
+```
+
+---
+
+## 6. Tình huống 3: Tra cứu chi tiết một buổi học
+
+Người dùng hỏi:
+
+```text
+Sáng thứ Hai học gì?
+```
+
+### Step 1
+
+Thought:
+
+```text
+Người dùng hỏi một buổi cụ thể là buổi sáng Thứ Hai. Cần xác định Thứ Hai là ngày 01/06/2026 và gọi tool lấy chi tiết buổi sáng.
+```
+
+Action:
+
+```json
+{
+  "tool": "get_session_detail",
+  "parameters": {
+    "date": "2026-06-01",
+    "session": "morning"
+  }
+}
+```
+
+Observation:
+
+```json
+{
+  "date": "2026-06-01",
+  "weekday": "Thứ Hai",
+  "session": "Buổi sáng",
+  "content": "Design Pattern ReAct, kiến trúc Agent, Agent Loop, Thought-Action-Observation."
+}
+```
+
+### Step 2
+
+Thought:
+
+```text
+Đã có nội dung chính xác của buổi sáng Thứ Hai. Cần định dạng câu trả lời ngắn gọn, dễ hiểu.
+```
+
+Action:
+
+```json
+{
+  "tool": "format_session_answer",
+  "parameters": {
+    "date": "2026-06-01",
+    "weekday": "Thứ Hai",
+    "session": "Buổi sáng",
+    "content": "Design Pattern ReAct, kiến trúc Agent, Agent Loop, Thought-Action-Observation."
+  }
+}
+```
+
+Observation:
+
+```json
+{
+  "status": "success",
+  "answer": "Sáng Thứ Hai, ngày 01/06/2026, học Design Pattern ReAct, kiến trúc Agent, Agent Loop và Thought-Action-Observation."
+}
+```
+
+### Step 3
+
+Thought:
+
+```text
+Câu hỏi đã được trả lời đúng trọng tâm. Agent dừng và trả lời cuối cùng.
+```
+
+Final Answer:
+
+```text
+Sáng Thứ Hai, ngày 01/06/2026, học:
+
+- Design Pattern ReAct
+- Kiến trúc Agent
+- Agent Loop
+- Thought-Action-Observation
+```
+
+---
+
+## 7. Điều kiện dừng của Agent
+
+Agent sẽ dừng khi đáp ứng đủ các điều kiện sau:
+
+1. Đã xác định được ý định của người dùng: hỏi theo ngày, theo buổi hay theo chủ đề.
+2. Đã gọi đúng tool tra cứu.
+3. Observation trả về có dữ liệu phù hợp.
+4. Agent đã định dạng được câu trả lời cuối cùng rõ ràng.
+5. Không cần gọi thêm tool vì câu hỏi đã được trả lời đầy đủ.
+
+Nếu không tìm thấy dữ liệu, agent sẽ dừng và trả lời rằng không có thông tin trong lịch học hiện tại.
+
+Ví dụ:
+
+```text
+Không tìm thấy nội dung liên quan đến từ khóa này trong lịch học từ ngày 01/06/2026 đến 05/06/2026.
+```
+
+---
+
+## 8. Final Answer tổng quát
+
+Khi người dùng hỏi về lịch học, agent sẽ trả lời theo mẫu:
+
+```text
+Theo lịch học, [ngày/buổi/chủ đề] có nội dung:
+
+- Buổi sáng: ...
+- Buổi chiều: ...
+
+Nếu bạn muốn, hệ thống có thể tiếp tục tra cứu chi tiết lab, chủ đề liên quan hoặc các buổi học cùng nội dung.
+```
+
+---
+
+## 9. Kết luận
+
+Kịch bản này sử dụng agent trong lĩnh vực giáo dục, nhưng không phải chấm bài. Agent tập trung vào nhiệm vụ hỗ trợ sinh viên tra cứu lịch học, thông tin học và nội dung buổi học. Agent có khả năng hiểu câu hỏi của người dùng, chọn tool phù hợp, nhận Observation từ dữ liệu lịch học và trả lời cuối cùng một cách rõ ràng.

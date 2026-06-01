@@ -11,6 +11,21 @@ from tools import TOOL_SCHEMAS, execute_tool
 
 load_dotenv()
 
+
+def _convert_to_anthropic_tools(schemas: list[dict]) -> list[dict]:
+    tools = []
+    for s in schemas:
+        func = s["function"]
+        tools.append({
+            "name": func["name"],
+            "description": func["description"],
+            "input_schema": func["parameters"],
+        })
+    return tools
+
+
+ANTHROPIC_TOOLS = _convert_to_anthropic_tools(TOOL_SCHEMAS)
+
 SYSTEM_PROMPT = """Bạn là trợ lý học tập chuyên biệt, CHỈ hỗ trợ sinh viên tra cứu lịch học và nội dung khóa học AI từ ngày 01/06/2026 (Thứ Hai) đến 05/06/2026 (Thứ Sáu).
 
 === PHẠM VI HOẠT ĐỘNG ===
@@ -30,7 +45,7 @@ Bạn CHỈ được phép trả lời các câu hỏi thuộc 3 loại sau:
 Nếu hỏi "Viết code Python cho tôi" hoặc "Thủ đô của Pháp là gì?" → Trả lời: "Tôi chỉ hỗ trợ tra cứu lịch học khóa AI từ 01–05/06/2026. Bạn có thể hỏi về lịch học theo ngày, chủ đề, hoặc buổi học cụ thể."
 """
 
-MODEL = "claude-haiku-3"
+MODEL = "anthropic/claude-3.5-haiku"
 MAX_STEPS = 8
 LOGS_DIR = "logs"
 
@@ -175,7 +190,7 @@ class RateLimiter:
 
 class ScheduleAgent:
     def __init__(self):
-        self.client = Anthropic()
+        self.client = Anthropic(base_url="https://openrouter.ai/api")
         self.messages = []
         self._session_id = str(uuid.uuid4())
         self._logger = SessionLogger(self._session_id)
@@ -219,7 +234,7 @@ class ScheduleAgent:
                 model=MODEL,
                 max_tokens=1024,
                 system=SYSTEM_PROMPT,
-                tools=TOOL_SCHEMAS,
+                tools=ANTHROPIC_TOOLS,
                 messages=self.messages,
             )
 
