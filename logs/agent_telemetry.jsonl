@@ -19,3 +19,12 @@
 {"timestamp": "2026-06-01T14:50:36.025191", "type": "USER_INPUT", "data": {"input": "alo"}}
 {"timestamp": "2026-06-01T14:50:39.374253", "type": "THOUGHT", "data": {"thought": "Xin chào! Tôi là trợ lý học tập để hỗ trợ bạn tra cứu lịch học và nội dung khóa học. Bạn có thể hỏi tôi về lịch học cho các ngày trong tuần từ 01/06/2026 đến 05/06/2026. Tôi sẽ sử dụng các công cụ tra cứu dữ liệu để giúp bạn. Bạn có câu hỏi gì cụ thể không?"}}
 {"timestamp": "2026-06-01T14:50:39.375093", "type": "FINAL_ANSWER", "data": {"answer": "Xin chào! Tôi là trợ lý học tập để hỗ trợ bạn tra cứu lịch học và nội dung khóa học. Bạn có thể hỏi tôi về lịch học cho các ngày trong tuần từ 01/06/2026 đến 05/06/2026. Tôi sẽ sử dụng các công cụ tra cứu dữ liệu để giúp bạn. Bạn có câu hỏi gì cụ thể không?"}}
+{"timestamp": "2026-06-01T15:09:06.020467", "type": "USER_INPUT", "data": {"input": "alo"}}
+{"timestamp": "2026-06-01T15:09:17.074534", "type": "THOUGHT", "data": {"thought": "Tôi là trợ lý học tập, có thể giúp bạn tra cứu lịch học và thông tin khóa học. Bạn có câu hỏi cụ thể nào không?"}}
+{"timestamp": "2026-06-01T15:09:17.075334", "type": "FINAL_ANSWER", "data": {"answer": "Tôi là trợ lý học tập, có thể giúp bạn tra cứu lịch học và thông tin khóa học. Bạn có câu hỏi cụ thể nào không?"}}
+{"timestamp": "2026-06-01T15:09:25.303880", "type": "USER_INPUT", "data": {"input": "hôm nay là thứ mấy"}}
+{"timestamp": "2026-06-01T15:09:27.122932", "type": "THOUGHT", "data": {"thought": "Để tra cứu ngày hôm nay là thứ mấy, tôi sẽ sử dụng công cụ "}}
+{"timestamp": "2026-06-01T15:09:27.123800", "type": "ACTION", "data": {"tool": "get_schedule_by_date", "params": "{\"date\": \"2026-06-01\"}"}}
+{"timestamp": "2026-06-01T15:09:27.124219", "type": "OBSERVATION", "data": {"result": "{\"date\": \"2026-06-01\", \"weekday\": \"Thứ Hai\", \"morning\": \"Design Pattern ReAct, kiến trúc Agent, Agent Loop, Thought-Action-Observation.\", \"afternoon\": \"Vibe Coding 3, Agent Loop Prototyping và Lab 3: Chatbot vs Agent – thực hành so sánh và xây dựng luồng Agent.\"}"}}
+{"timestamp": "2026-06-01T15:09:28.261723", "type": "THOUGHT", "data": {"thought": "Theo lịch học, hôm nay, ngày 1 tháng 6 năm 2026, là Thứ Hai."}}
+{"timestamp": "2026-06-01T15:09:28.262480", "type": "FINAL_ANSWER", "data": {"answer": "Theo lịch học, hôm nay, ngày 1 tháng 6 năm 2026, là Thứ Hai."}}

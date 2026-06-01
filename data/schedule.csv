@@ -1,0 +1,6 @@
+date,weekday,morning,afternoon
+2026-06-01,Thứ Hai,"Design Pattern ReAct, kiến trúc Agent, Agent Loop, Thought-Action-Observation.","Vibe Coding 3, Agent Loop Prototyping và Lab 3: Chatbot vs Agent – thực hành so sánh và xây dựng luồng Agent."
+2026-06-02,Thứ Ba,"Prompt Engineering & Tool Calling, bao gồm system prompt, function calling và LangGraph.","Vibe Coding 4, Tool Development with AI và Lab 4: Build First AI Agent – ReAct + Tools."
+2026-06-03,Thứ Tư,"AI Product Thinking & Requirements, PRD cho AI và Risk Assessment.","Vibe Coding 5, PRD Generation & Risk Analysis và Lab 5: PRD Writing & Risk Assessment."
+2026-06-04,Thứ Năm,"AI Product & Project Management, Agile cho AI, MVP và low-code tools.","Vibe Coding 6, Business Document Generation và Lab 6: Final PRD and ROI Analysis."
+2026-06-05,Thứ Sáu,"Data Foundations, gồm Embedding, Chunking, Vector Store, ChromaDB/FAISS.","Vibe Coding 7, Data Processing Pipeline và Lab 7: Vector Store Integration."

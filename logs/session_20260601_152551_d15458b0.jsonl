@@ -1,0 +1,2 @@
+{"timestamp": "2026-06-01T15:25:53.218235", "session_id": "d15458b0-fa1f-42c1-815b-72080fccfa1a", "event": "GUARDRAIL_BLOCKED", "input": "alo", "reason": "off_topic"}
+{"timestamp": "2026-06-01T15:25:58.906929", "session_id": "d15458b0-fa1f-42c1-815b-72080fccfa1a", "event": "TURN_START", "input": "hôm nay thứ mấy"}
