@@ -30,7 +30,7 @@ Bạn CHỈ được phép trả lời các câu hỏi thuộc 3 loại sau:
 Nếu hỏi "Viết code Python cho tôi" hoặc "Thủ đô của Pháp là gì?" → Trả lời: "Tôi chỉ hỗ trợ tra cứu lịch học khóa AI từ 01–05/06/2026. Bạn có thể hỏi về lịch học theo ngày, chủ đề, hoặc buổi học cụ thể."
 """
 
-MODEL = "claude-haiku-3"
+MODEL = "anthropic/claude-3-haiku"
 MAX_STEPS = 8
 LOGS_DIR = "logs"
 
@@ -175,12 +175,16 @@ class RateLimiter:
 
 class ScheduleAgent:
     def __init__(self):
-        self.client = Anthropic()
+        self.client = Anthropic(
+            base_url="https://openrouter.ai/api",
+            api_key=os.getenv("ANTHROPIC_API_KEY"),
+        )
         self.messages = []
         self._session_id = str(uuid.uuid4())
         self._logger = SessionLogger(self._session_id)
         self._rate_limiter = RateLimiter()
         self._session_tokens_used = 0
+        self._session_cost_usd = 0.0
 
     def chat(self, user_input: str) -> str:
         # EDoS guard 1: rate limiting
@@ -230,6 +234,11 @@ class ScheduleAgent:
             total_output_tokens += output_tokens
             self._session_tokens_used += input_tokens + output_tokens
 
+            # Calculate cost (Claude 3 Haiku: Input $0.25/M, Output $1.25/M)
+            step_cost = (input_tokens * 0.25 + output_tokens * 1.25) / 1_000_000
+            step_cost = round(step_cost, 6)
+            self._session_cost_usd = round(self._session_cost_usd + step_cost, 6)
+
             text_blocks = [b for b in response.content if b.type == "text"]
             tool_use_blocks = [b for b in response.content if b.type == "tool_use"]
 
@@ -238,6 +247,8 @@ class ScheduleAgent:
                 "input_tokens": input_tokens,
                 "output_tokens": output_tokens,
                 "session_tokens_total": self._session_tokens_used,
+                "step_cost_usd": step_cost,
+                "session_cost_total_usd": self._session_cost_usd,
                 "latency_ms": step_latency_ms,
                 "stop_reason": response.stop_reason,
                 "tools_called": [t.name for t in tool_use_blocks],
@@ -288,6 +299,7 @@ class ScheduleAgent:
                     "total_input_tokens": total_input_tokens,
                     "total_output_tokens": total_output_tokens,
                     "session_tokens_total": self._session_tokens_used,
+                    "session_cost_total_usd": self._session_cost_usd,
                     "total_latency_ms": round((time.time() - turn_start) * 1000, 2),
                     "answer_length": len(final_text),
                 })
@@ -300,6 +312,7 @@ class ScheduleAgent:
             "total_input_tokens": total_input_tokens,
             "total_output_tokens": total_output_tokens,
             "session_tokens_total": self._session_tokens_used,
+            "session_cost_total_usd": self._session_cost_usd,
             "total_latency_ms": round((time.time() - turn_start) * 1000, 2),
         })
         return "Xin lỗi, tôi không thể hoàn thành yêu cầu trong giới hạn cho phép. Vui lòng thử lại với câu hỏi cụ thể hơn."
