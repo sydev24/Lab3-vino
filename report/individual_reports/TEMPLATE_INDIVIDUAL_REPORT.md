@@ -1,8 +1,8 @@
 # Individual Report: Lab 3 - Chatbot vs ReAct Agent
 
-- **Student Name**: Lê Đình Sỹ
-- **Student ID**: 2A202600770
-- **Date**: 6/12026
+- **Student Name**: Vũ Văn Huy  
+- **Student ID**: 2A202600750
+- **Date**: 01/06/2026 (dd/mm/yy)
 
 ---
 
